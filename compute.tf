@@ -1,12 +1,5 @@
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["cloudsec-instance"]
-  }
-
-  owners = ["amazon"]
+data "aws_ssm_parameter" "al2023_ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
 }
 
 resource "aws_iam_role" "ec2_role" {
@@ -28,7 +21,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 resource "aws_instance" "compute" {
-  ami                         = data.aws_ami.amazon_linux.id
+  ami                         = data.aws_ssm_parameter.al2023_ami.value
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.private.id
   vpc_security_group_ids       = [aws_security_group.compute_sg.id]
